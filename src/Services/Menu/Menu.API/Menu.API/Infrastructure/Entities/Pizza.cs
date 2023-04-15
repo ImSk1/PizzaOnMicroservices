@@ -10,16 +10,13 @@ namespace Menu.API.Infrastructure.Entities
 
         [BsonId]
         public Guid Id { get; set; }
-        [BsonRequired]
-        public string Name { get; set; }
 
-        [BsonIgnoreIfDefault]
-        [BsonIgnoreIfNull]
-        public IEnumerable<string> Ingredients { get; set; }
+        [BsonRequired] public string Name { get; set; } = null!;
 
-        [BsonRequired]
-        public bool InStock { get; set; }
-        [BsonRequired]
-        public double Cost { get; set; }
+        [BsonRequired] public IEnumerable<string> Ingredients { get; set; } = null!;
+
+        [BsonRequired] public bool InStock { get; set; }
+
+        [BsonRequired] public double Cost { get; set; }
     }
 }

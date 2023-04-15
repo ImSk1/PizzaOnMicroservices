@@ -34,7 +34,8 @@ namespace Menu.API.Services
             var validationResult = _validator.Validate(pizza);
             if (!validationResult.IsValid)
             {
-                throw new ArgumentException("Invalid Pizza");
+                _logger.LogError(validationResult.ToString());
+                throw new ArgumentException();
             }
             await _repo.AddOneAsync<Pizza>(pizza);
         }

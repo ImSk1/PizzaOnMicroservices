@@ -1,4 +1,6 @@
 ﻿using Menu.API.Infrastructure;
+using Menu.API.Services;
+using Menu.API.Services.Contracts;
 using Menu.API.Settings;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson.Serialization.Serializers;
@@ -41,7 +43,7 @@ namespace Menu.API.Extensions
             return services;
         }
 
-        public static IServiceCollection AddMongo(this IServiceCollection services, IConfiguration config, string appName)
+        public static IServiceCollection AddMongo(this IServiceCollection services, IConfiguration config)
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             services.AddSingleton<IMongoDbContext>(serviceProvider =>
@@ -85,6 +87,12 @@ namespace Menu.API.Extensions
                 //.WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl, null)
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
+        }
+        public static IServiceCollection AddCustomServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped<IMenuService, MenuService>();
+
+            return services;
         }
     }
 }

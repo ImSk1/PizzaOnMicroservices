@@ -22,10 +22,9 @@ builder.Services
     .AddValidatorsFromAssembly(Assembly.Load(Namespace), ServiceLifetime.Scoped)
     .AddCustomMVC(builder.Configuration)
     .AddSwagger(builder.Configuration)
-    .AddMongo(builder.Configuration, appName)
+    .AddMongo(builder.Configuration)
     .AddCustomHealthChecks(builder.Configuration)
-    .AddScoped<IMenuService, MenuService>();
-
+    .AddCustomServices(builder.Configuration);
 
 builder.Host.UseSerilog(CustomStartupExtensions.CreateSerilogLogger(builder.Configuration));
 
