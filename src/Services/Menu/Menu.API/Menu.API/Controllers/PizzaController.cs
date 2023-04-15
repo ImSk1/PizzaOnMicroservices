@@ -41,7 +41,16 @@ namespace Menu.API.Controllers
             };
             await _menuService.AddPizza(newPizza);
             return CreatedAtAction("PizzasAsync", null);
+        }
 
+        [Route("pizzas")]
+        [HttpPut]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Created)]
+        public async Task<IActionResult> UpdatePizzaAsync([FromBody] Pizza pizzaToUpdate)
+        {
+            await _menuService.UpdatePizza(pizzaToUpdate);
+            return CreatedAtAction("PizzasAsync", null);
         }
     }
 }

@@ -6,5 +6,7 @@ namespace Menu.API.Services.Contracts
     {
         Task<IEnumerable<Pizza>> GetAllPizzasAsync();
         Task AddPizza(Pizza pizza);
+        Task<Pizza> GetPizzaById(Guid id);
+        Task UpdatePizza(Pizza newPizza);
     }
 }

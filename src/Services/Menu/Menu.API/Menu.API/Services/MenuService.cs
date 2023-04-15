@@ -2,6 +2,7 @@
 using Menu.API.Services.Contracts;
 using MongoDbGenericRepository;
 using Menu.API.Infrastructure.Entities;
+using Menu.API.Infrastructure.Exceptions;
 using Menu.API.Services;
 using Serilog;
 
@@ -34,10 +35,33 @@ namespace Menu.API.Services
             var validationResult = _validator.Validate(pizza);
             if (!validationResult.IsValid)
             {
-                _logger.LogError(validationResult.ToString());
-                throw new ArgumentException();
+                throw new ArgumentException(validationResult.ToString());
             }
             await _repo.AddOneAsync<Pizza>(pizza);
+        }
+
+        public async Task<Pizza> GetPizzaById(Guid id)
+        {
+            _logger.LogInformation("----- Menu Service - Getting pizza by Id. Pizza Id: {pizzaId}", id);
+            if (!await _repo.AnyAsync<Pizza>(pz => pz.Id == id))
+            {
+                throw new NotFoundException($"Pizza with id {id} does not exist.");
+            }
+            return await _repo.GetOneAsync<Pizza>(pz => pz.Id == id);
+        }
+
+        public async Task UpdatePizza(Pizza newPizza)
+        {
+            _logger.LogInformation("----- Menu Service - Updating pizza. Pizza Id: {pizzaId}", newPizza.Id);
+
+            var oldPizza = _repo.GetOne<Pizza>(pz => pz.Id == newPizza.Id);
+            if (oldPizza == null)
+            {
+                throw new NotFoundException($"Pizza with id {newPizza.Id} does not exist.");
+            }
+
+            oldPizza = newPizza;
+            await _repo.UpdateOneAsync<Pizza>(oldPizza);
         }
     }
 }
