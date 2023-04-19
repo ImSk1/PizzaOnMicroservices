@@ -5,30 +5,34 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+
+builder.AddCustomConfiguration();
+builder.AddCustomMvc();
+builder.AddCustomDatabase();
+builder.AddCustomIdentity();
+builder.AddCustomIdentityServer();
+builder.AddCustomAuthentication();
+builder.AddCustomApplicationServices();
 
 builder.Host.UseSerilog(ProgramExtensions.CreateSerilogLogger(builder.Configuration));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseDeveloperExceptionPage();
 }
-
-app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseIdentityServer();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseAuthentication();
+
+app.MapDefaultControllerRoute();
+
 
 app.Run();
