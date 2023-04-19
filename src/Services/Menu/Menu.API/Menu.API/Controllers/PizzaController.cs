@@ -52,5 +52,16 @@ namespace Menu.API.Controllers
             await _menuService.UpdatePizza(pizzaToUpdate);
             return CreatedAtAction("PizzasAsync", null);
         }
+
+        [Route("pizzas")]
+        [HttpPut]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> DeletePizzaAsync([FromBody] Guid id)
+        {
+            await _menuService.DeletePizza(id);
+
+            return CreatedAtAction("PizzasAsync", null);
+        }
     }
 }
