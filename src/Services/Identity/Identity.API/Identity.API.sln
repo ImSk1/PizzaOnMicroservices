@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.API", "Identity.API\Identity.API.csproj", "{F3814F49-9BCE-4221-B542-13711B4F4465}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.API", "Identity.API\Identity.API.csproj", "{56252B14-11FE-47FA-91B8-5788084FA476}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F3814F49-9BCE-4221-B542-13711B4F4465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3814F49-9BCE-4221-B542-13711B4F4465}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3814F49-9BCE-4221-B542-13711B4F4465}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3814F49-9BCE-4221-B542-13711B4F4465}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56252B14-11FE-47FA-91B8-5788084FA476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56252B14-11FE-47FA-91B8-5788084FA476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56252B14-11FE-47FA-91B8-5788084FA476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56252B14-11FE-47FA-91B8-5788084FA476}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

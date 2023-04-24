@@ -2,5 +2,7 @@
 
 namespace Identity.API.Models
 {
-    public class ApplicationUser : IdentityUser { }
+    public class ApplicationUser : IdentityUser
+    {
+    }
 }

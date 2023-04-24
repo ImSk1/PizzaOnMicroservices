@@ -1,4 +1,5 @@
-﻿using Identity.API.Data;
+﻿using Identity.API.Configuration;
+using Identity.API.Data;
 using Identity.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +22,9 @@ namespace Identity.API.Extensions
         }
         public static void AddCustomApplicationServices(this WebApplicationBuilder builder)
         {
-           
+
         }
-       
+
         public static void AddCustomAuthentication(this WebApplicationBuilder builder)
         {
             builder.Services.AddAuthentication();
@@ -36,12 +37,12 @@ namespace Identity.API.Extensions
 
         }
         public static void AddCustomDatabase(this WebApplicationBuilder builder) =>
-            builder.Services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(builder.Configuration["ConnectionString"]));
+            builder.Services.AddDbContext<IdentityApiDbContext>(
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
         public static void AddCustomIdentity(this WebApplicationBuilder builder)
         {
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<IdentityApiDbContext>()
                 .AddDefaultTokenProviders();
         }
         public static Serilog.ILogger CreateSerilogLogger(IConfiguration config)
@@ -65,21 +66,20 @@ namespace Identity.API.Extensions
         }
         public static void AddCustomIdentityServer(this WebApplicationBuilder builder)
         {
-                var identityServerBuilder = builder.Services.AddIdentityServer(options =>
-                {
-                    options.IssuerUri = "null";
-                    options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+            var identityServerBuilder = builder.Services.AddIdentityServer(options =>
+            {
+                options.IssuerUri = "null";
+                options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
 
-                    options.Events.RaiseErrorEvents = true;
-                    options.Events.RaiseInformationEvents = true;
-                    options.Events.RaiseFailureEvents = true;
-                    options.Events.RaiseSuccessEvents = true;
-                })
-                //.AddInMemoryIdentityResources(Config.GetResources())
-                //.AddInMemoryApiScopes(Config.GetApiScopes())
-                //.AddInMemoryApiResources(Config.GetApis())
-                //.AddInMemoryClients(Config.GetClients(builder.Configuration))
-                .AddAspNetIdentity<ApplicationUser>();
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+            })
+            .AddInMemoryIdentityResources(Config.GetResources())
+            .AddInMemoryApiScopes(Config.GetApiScopes())
+            .AddInMemoryClients(Config.GetClients(builder.Configuration))
+            .AddAspNetIdentity<ApplicationUser>();
 
             // not recommended for production - you need to store your key material somewhere secure
             identityServerBuilder.AddDeveloperSigningCredential();
