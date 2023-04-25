@@ -51,11 +51,6 @@ namespace Identity.API.Controllers
             return View(inputModel);
 
         }
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            return View();
-        }
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
