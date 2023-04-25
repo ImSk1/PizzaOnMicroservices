@@ -40,10 +40,11 @@ namespace Identity.API.Configuration
         {
             return new List<Client>
             {
-                // JavaScript Client
+                // MVC Client
                 new Client
                 {
-                    ClientId = "client",
+                    ClientId = "mvc",
+                    ClientName = "WebMVC",
 
                     // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ClientCredentials,

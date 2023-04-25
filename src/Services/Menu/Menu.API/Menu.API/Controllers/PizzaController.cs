@@ -54,7 +54,7 @@ namespace Menu.API.Controllers
         }
 
         [Route("pizzas")]
-        [HttpPut]
+        [HttpDelete]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> DeletePizzaAsync([FromBody] Guid id)
