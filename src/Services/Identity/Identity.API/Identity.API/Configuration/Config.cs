@@ -38,25 +38,30 @@ namespace Identity.API.Configuration
         // client want to access resources (aka scopes)
         public static IEnumerable<Client> GetClients(IConfiguration configuration)
         {
+            var redirectUri = configuration["MVCClient"];
             return new List<Client>
             {
                 // MVC Client
                 new Client
                 {
                     ClientId = "mvc",
-                    ClientName = "WebMVC",
+                    ClientName = "MVC Client",
+                    AllowedGrantTypes = GrantTypes.Code, // This is the line that should include the "authorization_code" grant type
 
-                    // no interactive user, use the clientid/secret for authentication
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    RedirectUris = { "http://localhost:5220/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:5220/signout-callback-oidc" },
 
-                    // secret for authentication
-                    ClientSecrets =
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+
+                    AllowedScopes = new List<string>
                     {
-                        new Secret("secret".Sha256())
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "menu"
                     },
 
-                    // scopes that client has access to
-                    AllowedScopes = { "menu" }
+                    RequirePkce = true,
+                    AllowPlainTextPkce = false
                 },
             };
         }

@@ -24,7 +24,8 @@ builder.Services
     .AddSwagger(builder.Configuration)
     .AddMongo(builder.Configuration)
     .AddCustomHealthChecks(builder.Configuration)
-    .AddCustomServices(builder.Configuration);
+    .AddCustomServices(builder.Configuration)
+    .AddCustomAuthentication(builder.Configuration);
 
 builder.Host.UseSerilog(CustomStartupExtensions.CreateSerilogLogger(builder.Configuration));
 
@@ -54,6 +55,8 @@ app.UseSwagger()
     });
 app.UseRouting();
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapDefaultControllerRoute();
 app.MapControllers();
 app.UseHealthChecksUI(config => config.UIPath = "/hc-ui");

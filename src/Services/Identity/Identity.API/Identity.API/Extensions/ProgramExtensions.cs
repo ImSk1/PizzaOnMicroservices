@@ -1,4 +1,5 @@
-﻿using Identity.API.Configuration;
+﻿using Duende.IdentityServer.Configuration;
+using Identity.API.Configuration;
 using Identity.API.Data;
 using Identity.API.Models;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,7 @@ namespace Identity.API.Extensions
         public static void AddCustomMvc(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllersWithViews();
+            
             builder.Services.AddControllers();
             builder.Services.AddRazorPages();
 
@@ -67,10 +69,10 @@ namespace Identity.API.Extensions
         public static void AddCustomIdentityServer(this WebApplicationBuilder builder)
         {
             var identityServerBuilder = builder.Services.AddIdentityServer(options =>
-            {
-                options.IssuerUri = "null";
+            { 
+                options.UserInteraction.LoginUrl = "/Account/Login";
+                options.IssuerUri = "http://localhost:5001";
                 options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
-
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
@@ -80,7 +82,7 @@ namespace Identity.API.Extensions
             .AddInMemoryApiScopes(Config.GetApiScopes())
             .AddInMemoryClients(Config.GetClients(builder.Configuration))
             .AddAspNetIdentity<ApplicationUser>();
-
+            
             // not recommended for production - you need to store your key material somewhere secure
             identityServerBuilder.AddDeveloperSigningCredential();
         }

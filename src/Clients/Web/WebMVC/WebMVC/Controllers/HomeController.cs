@@ -13,9 +13,20 @@ namespace WebMVC.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync("http://localhost:5001/.well-known/openid-configuration");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return Ok(content);
+            }
+            else
+            {
+                return BadRequest(response.StatusCode);
+            }
+            
         }
 
         public IActionResult Privacy()

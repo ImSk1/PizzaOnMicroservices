@@ -64,6 +64,21 @@ namespace Menu.API.Extensions
                     Title = "PizzaOnContainers - Menu HTTP API",
                     Version = "v1"
                 });
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows()
+                    {
+                        Implicit = new OpenApiOAuthFlow()
+                        {
+                            AuthorizationUrl =
+                                new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                            TokenUrl =
+                                new Uri($"{configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
+                            Scopes = new Dictionary<string, string>() { { "menu", "Menu API" } }
+                        }
+                    }
+                });
             });
 
             return services;
@@ -91,6 +106,25 @@ namespace Menu.API.Extensions
         public static IServiceCollection AddCustomServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IMenuService, MenuService>();
+
+            return services;
+        }
+        public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var identityUrl = configuration.GetValue<string>("IdentityUrl");
+
+            services.AddAuthentication("Bearer").AddJwtBearer(options => {
+                options.Authority = identityUrl;
+                options.RequireHttpsMetadata = false;
+                options.Audience = "basket";
+                options.TokenValidationParameters.ValidateAudience = false;
+            });
+            services.AddAuthorization(options => {
+                options.AddPolicy("ApiScope", policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "basket");
+                });
+            });
 
             return services;
         }

@@ -19,6 +19,7 @@ public class MenuController : Controller
         return View();
     }
 
+    [HttpGet]
     public async Task<IActionResult> Menu()
     {
         try

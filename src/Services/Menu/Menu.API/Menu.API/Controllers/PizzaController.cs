@@ -2,11 +2,13 @@
 using System.Net;
 using Menu.API.Infrastructure.Entities;
 using Menu.API.Services.Contracts;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Menu.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize]
     public class PizzaController : ControllerBase
     {
         private readonly IMenuService _menuService;
