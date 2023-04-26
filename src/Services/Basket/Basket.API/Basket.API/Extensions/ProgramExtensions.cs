@@ -4,6 +4,7 @@ using Basket.API.Infrastructure.Repositories;
 using Basket.API.Services;
 using Basket.API.Services.Contracts;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -33,10 +34,10 @@ namespace Basket.API.Extensions
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
-
             });
             return services;
         }
+
         public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSwaggerGen(options =>
@@ -65,6 +66,7 @@ namespace Basket.API.Extensions
 
             return services;
         }
+
         public static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
         {
             var seqServerUrl = configuration["Serilog:SeqServerUrl"];
@@ -78,18 +80,23 @@ namespace Basket.API.Extensions
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
         }
-        public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
+
+        public static IServiceCollection AddCustomAuthentication(this IServiceCollection services,
+            IConfiguration configuration)
         {
             var identityUrl = configuration.GetValue<string>("IdentityUrl");
 
-            services.AddAuthentication("Bearer").AddJwtBearer(options => {
+            services.AddAuthentication("Bearer").AddJwtBearer(options =>
+            {
                 options.Authority = identityUrl;
                 options.RequireHttpsMetadata = false;
                 options.Audience = "basket";
                 options.TokenValidationParameters.ValidateAudience = false;
             });
-            services.AddAuthorization(options => {
-                options.AddPolicy("ApiScope", policy => {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ApiScope", policy =>
+                {
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim("scope", "basket");
                 });
@@ -97,22 +104,45 @@ namespace Basket.API.Extensions
 
             return services;
         }
+
         public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<BasketSettings>(configuration);
 
-            services.AddSingleton<ConnectionMultiplexer>(sp => {
+            services.AddSingleton<ConnectionMultiplexer>(sp =>
+            {
                 var settings = sp.GetRequiredService<IOptions<BasketSettings>>().Value;
                 var configuration = ConfigurationOptions.Parse(settings.ConnectionString, true);
 
                 return ConnectionMultiplexer.Connect(configuration);
-            }); return services;
+            });
+            return services;
         }
-        public static IServiceCollection AddCustomServices(this IServiceCollection services, IConfiguration configuration)
+
+        public static IServiceCollection AddCustomServices(this IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IBasketRepository, RedisBasketRepo>();
             services.AddScoped<IIdentityService, IdentityService>();
+            return services;
+        }
+
+        public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy());
+
+            hcBuilder
+                .AddRedis(
+                    configuration["ConnectionString"],
+                    name: "redis-check",
+                    tags: new string[] { "redis" });
+
+            services.AddHealthChecksUI().AddInMemoryStorage();
+
+
             return services;
         }
     }

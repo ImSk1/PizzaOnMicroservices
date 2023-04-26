@@ -1,6 +1,8 @@
 using System.Reflection;
 using Basket.API.Extensions;
 using FluentValidation;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 var appName = "Basket.API";
@@ -13,7 +15,8 @@ builder.Services
     .AddSwagger(builder.Configuration)
     .AddCustomServices(builder.Configuration)
     .AddCustomAuthentication(builder.Configuration)
-    .AddRedisCache(builder.Configuration);
+    .AddRedisCache(builder.Configuration)
+    .AddCustomHealthCheck(builder.Configuration);
 
 // Add services to the container.
 
@@ -46,6 +49,25 @@ app.MapDefaultControllerRoute();
 app.MapControllers();
 
 app.UseHttpsRedirection();
+
+
+app.MapHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+app.MapHealthChecks("/liveness", new HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
+app.UseHealthChecksUI(config =>
+{
+    config.UIPath = "/hc-ui";
+
+});
+
+
+
 
 
 app.Run();
