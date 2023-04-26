@@ -71,6 +71,7 @@ namespace Identity.API.Extensions
             var identityServerBuilder = builder.Services.AddIdentityServer(options =>
             { 
                 options.UserInteraction.LoginUrl = "/Account/Login";
+                
                 options.IssuerUri = "http://localhost:5001";
                 options.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 options.Events.RaiseErrorEvents = true;
