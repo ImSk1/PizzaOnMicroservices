@@ -1,13 +1,19 @@
+using System.Reflection;
 using Basket.API.Extensions;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 var appName = "Basket.API";
 var builder = WebApplication.CreateBuilder(args);
+builder.AddCustomConfiguration();
+
 builder.Services
+    .AddValidatorsFromAssembly(Assembly.Load(Namespace), ServiceLifetime.Scoped)
     .AddCustomMVC(builder.Configuration)
     .AddSwagger(builder.Configuration)
     .AddCustomServices(builder.Configuration)
-    .AddCustomAuthentication(builder.Configuration);
+    .AddCustomAuthentication(builder.Configuration)
+    .AddRedisCache(builder.Configuration);
 
 // Add services to the container.
 
@@ -43,3 +49,8 @@ app.UseHttpsRedirection();
 
 
 app.Run();
+public partial class Program
+{
+    public static string Namespace = typeof(Program).Assembly.GetName().Name;
+    public static string AppName = Namespace.Substring(Namespace.LastIndexOf('.', Namespace.LastIndexOf('.') - 1) + 1);
+}

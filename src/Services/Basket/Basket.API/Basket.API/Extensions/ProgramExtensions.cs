@@ -1,10 +1,26 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Basket.API.Configuration;
+using Basket.API.Infrastructure.Contracts;
+using Basket.API.Infrastructure.Repositories;
+using Basket.API.Services;
+using Basket.API.Services.Contracts;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using StackExchange.Redis;
 
 namespace Basket.API.Extensions
 {
     public static class ProgramExtensions
     {
+        public static void AddCustomConfiguration(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddOptions();
+            builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        }
+
+
         public static IServiceCollection AddCustomMVC(this IServiceCollection services, IConfiguration config)
         {
             services.AddControllers();
@@ -81,8 +97,22 @@ namespace Basket.API.Extensions
 
             return services;
         }
+        public static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<BasketSettings>(configuration);
+
+            services.AddSingleton<ConnectionMultiplexer>(sp => {
+                var settings = sp.GetRequiredService<IOptions<BasketSettings>>().Value;
+                var configuration = ConfigurationOptions.Parse(settings.ConnectionString, true);
+
+                return ConnectionMultiplexer.Connect(configuration);
+            }); return services;
+        }
         public static IServiceCollection AddCustomServices(this IServiceCollection services, IConfiguration configuration)
-        
+        {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IBasketRepository, RedisBasketRepo>();
+            services.AddScoped<IIdentityService, IdentityService>();
             return services;
         }
     }

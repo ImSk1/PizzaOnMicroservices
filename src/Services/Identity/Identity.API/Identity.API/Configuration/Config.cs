@@ -10,6 +10,7 @@ namespace Identity.API.Configuration
             return new List<ApiResource>
             {
                 new ApiResource("menu", "Menu Service"),
+                new ApiResource("basket", "Basket Service"),
 
             };
         }
@@ -21,6 +22,7 @@ namespace Identity.API.Configuration
             return new List<ApiScope>
             {
                 new ApiScope("menu", "Menu Service"),
+                new ApiScope("basket", "Basket Service"),
             };
         }
 
@@ -57,7 +59,8 @@ namespace Identity.API.Configuration
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "menu"
+                        "menu",
+                        "basket"
                     },
 
                     RequirePkce = true,
