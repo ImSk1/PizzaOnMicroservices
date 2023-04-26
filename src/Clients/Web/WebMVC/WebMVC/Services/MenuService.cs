@@ -23,7 +23,7 @@ public class MenuService : IMenuService
         _menuByPassUrl = $"{_settings.Value.MenuUrl}/api/v1/Pizza/pizzas";
     }
 
-    public async Task<string> GetMenu()
+    public async Task<Menu> GetMenu()
     {
         var uri = API.Menu.GetMenu(_menuByPassUrl);
         _logger.LogDebug("[GetMenu] -> Calling {Uri} to get the menu", uri);
@@ -33,6 +33,21 @@ public class MenuService : IMenuService
 
         var responseString = await response.Content.ReadAsStringAsync();
 
-        return responseString;
+        if (string.IsNullOrEmpty(responseString))
+        {
+            return new Menu { Items = new List<MenuItem>()};
+        }
+
+        var menuItems = JsonSerializer.Deserialize<MenuItem[]>(responseString, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (menuItems == null)
+        {
+            return new Menu { Items = new List<MenuItem>() };
+        }
+
+        return new Menu { Items = menuItems.ToList() };
     }
 }

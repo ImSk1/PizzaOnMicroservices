@@ -1,0 +1,36 @@
+﻿@using WebMVC.ViewModels;
+@model Menu
+
+<link href="\css\menu.css" rel="stylesheet" />
+
+<div class="cards">
+    @foreach (var item in Model.Items)
+    {
+        <div class="container items">
+            <div class="item">
+                <img src="/pizza.png" />
+            </div>
+            <div class="item">
+                <h5>@item.Name</h5>
+                @if (item.InStock)
+                {
+                    <div class="stock-yes">in stock</div>
+                }
+                else
+                {
+                    <div class="stock-no">out of stock</div>
+                }
+                <ul>
+                    @foreach (var ingr in item.Ingredients)
+                    {
+                        <li>@ingr</li>
+                    }
+                </ul>
+                <h6>@item.Cost</h6>
+                <form>
+                    <button type="submit">add to basket</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
