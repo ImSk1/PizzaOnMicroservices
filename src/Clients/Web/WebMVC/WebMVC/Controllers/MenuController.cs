@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using System.Xml.Linq;
 using WebMVC.Services.Contracts;
+using WebMVC.ViewModels;
 
 namespace WebMVC.Controllers;
 
-[Authorize]
 public class MenuController : Controller
 {
     private readonly IMenuService _menuSvc;
@@ -14,26 +16,22 @@ public class MenuController : Controller
         _menuSvc = menuSvc;
     }
 
-    public IActionResult Index()
-    {
-        return View();
-    }
-
     [HttpGet]
-    public async Task<IActionResult> Menu()
+    [Route("menu")]
+    public async Task<IActionResult> MenuAsync()
     {
         try
         {
             var vm = await _menuSvc.GetMenu();
-
-            return Ok(vm);
+        
+            return View(vm);
         }
         catch (Exception ex)
         {
             HandleException(ex);
         }
-
-        return RedirectToAction(nameof(Index));
+        
+        return RedirectToAction("Index", "Home");
     }
 
     private void HandleException(Exception ex)

@@ -1,0 +1,53 @@
+﻿.cards {
+    display: flex;
+    flex-direction: row;
+}
+
+.items {
+    display: flex;
+    flex-direction: column;
+    border: solid 1px black;
+    width: 300px;
+    height: 500px;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+}
+
+img {
+    width: 100%;
+}
+
+h5 {
+    font-size: 22px;
+}
+
+.stock-yes {
+    font-size: 17px;
+    color: #00FF7F;
+}
+
+.stock-no {
+    font-size: 17px;
+    color: #FF1A1A;
+}
+
+ul {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+h6 {
+    font-size: 18px;
+}
+
+button {
+    background: none;
+    border: none;
+    color: black;
+}

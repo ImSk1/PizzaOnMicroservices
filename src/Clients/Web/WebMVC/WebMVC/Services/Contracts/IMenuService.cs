@@ -4,5 +4,5 @@ namespace WebMVC.Services.Contracts;
 
 public interface IMenuService
 {
-    public Task<string> GetMenu();
+    public Task<Menu> GetMenu();
 }

@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
-using WebMVC.Configuration;
 using static WebMVC.Extensions.ProgramExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,9 +31,10 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
-app.MapDefaultControllerRoute();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 await app.RunAsync();
 

@@ -53,6 +53,10 @@ namespace WebMVC.Extensions
             builder.Services.AddHttpClient<IMenuService, MenuService>()
                     .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                     .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+
+            builder.Services.AddHttpClient<IBasketService, BasketService>()
+                    .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                    .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         }
 
         public static void AddCustomAuthentication(this WebApplicationBuilder builder)
