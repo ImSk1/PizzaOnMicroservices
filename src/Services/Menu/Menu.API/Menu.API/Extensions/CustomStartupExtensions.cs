@@ -128,5 +128,18 @@ namespace Menu.API.Extensions
 
             return services;
         }
+
+        public static IServiceCollection AddCustomGrpc(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddGrpc();
+            return services;
+        }
+        public static (int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)
+        {
+            var grpcPort = config.GetValue("GRPC_PORT", 5101);
+            var port = config.GetValue("PORT", 50001);
+            return (port, grpcPort);
+        }
+
     }
 }

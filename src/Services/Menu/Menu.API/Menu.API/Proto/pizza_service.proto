@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option csharp_namespace = "Menu.API.Grpc";
+
+package pizza;
+
+service PizzaService {
+    rpc GetAllPizzas (Empty) returns (GetAllPizzasResponse);
+    rpc CreatePizza (Pizza) returns (Empty);
+    rpc UpdatePizza (Pizza) returns (Empty);
+    rpc DeletePizza (DeletePizzaRequest) returns (DeletePizzaResponse);
+}
+message Empty {}
+
+message GetAllPizzasResponse {
+    repeated Pizza pizzas = 1;
+}
+
+
+
+message DeletePizzaRequest {
+    string id = 1;
+}
+
+message DeletePizzaResponse {}
+
+message Pizza {
+    string id = 1;
+    string name = 2;
+    repeated string ingredients = 3;
+    bool in_stock = 4;
+    double cost = 5;
+}

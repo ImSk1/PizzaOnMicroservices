@@ -1,10 +1,13 @@
+using System.Net;
 using System.Reflection;
 using FluentValidation;
 using HealthChecks.UI.Client;
 using Menu.API.Extensions;
+using Menu.API.Grpc;
 using Menu.API.Services;
 using Menu.API.Services.Contracts;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 
 var appName = "Menu.API";
@@ -17,7 +20,16 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     ContentRootPath = Directory.GetCurrentDirectory()
 });
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+builder.WebHost.UseKestrel(options => {
+    var ports = CustomStartupExtensions.GetDefinedPorts(builder.Configuration);
+    options.Listen(IPAddress.Any, ports.httpPort, listenOptions => {
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+    });
+    options.Listen(IPAddress.Any, ports.grpcPort, listenOptions => {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
 
+});
 builder.Services
     .AddValidatorsFromAssembly(Assembly.Load(Namespace), ServiceLifetime.Scoped)
     .AddCustomMVC(builder.Configuration)
@@ -25,7 +37,8 @@ builder.Services
     .AddMongo(builder.Configuration)
     .AddCustomHealthChecks(builder.Configuration)
     .AddCustomServices(builder.Configuration)
-    .AddCustomAuthentication(builder.Configuration);
+    .AddCustomAuthentication(builder.Configuration)
+    .AddCustomGrpc(builder.Configuration);
 
 builder.Host.UseSerilog(CustomStartupExtensions.CreateSerilogLogger(builder.Configuration));
 
@@ -58,6 +71,7 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapDefaultControllerRoute();
+app.MapGrpcService<PizzaGrpcService>();
 app.MapControllers();
 app.UseHealthChecksUI(config => config.UIPath = "/hc-ui");
 
