@@ -11,6 +11,8 @@ namespace Identity.API.Configuration
             {
                 new ApiResource("menu", "Menu Service"),
                 new ApiResource("basket", "Basket Service"),
+                new ApiResource("webbff", "Web Bff"),
+
 
             };
         }
@@ -23,6 +25,7 @@ namespace Identity.API.Configuration
             {
                 new ApiScope("menu", "Menu Service"),
                 new ApiScope("basket", "Basket Service"),
+                new ApiScope("webbff", "Web Bff"),
             };
         }
 
@@ -60,11 +63,28 @@ namespace Identity.API.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         "menu",
-                        "basket"
+                        "basket",
+                        "webbff"
                     },
 
                     RequirePkce = true,
                     AllowPlainTextPkce = false
+                },
+                new Client
+                {
+                    ClientId = "webbff",
+                    ClientName = "bff Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    RedirectUris = { $"{configuration["WebBffUrl"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{configuration["WebBffUrl"]}/swagger/" },
+
+                    AllowedScopes =
+                    {
+                        "webbff",
+                        "basket"
+                    }
                 },
             };
         }

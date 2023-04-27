@@ -85,6 +85,7 @@ namespace WebMVC.Extensions
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = false;
                 options.Scope.Add("menu");
+                options.Scope.Add("webbff");
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

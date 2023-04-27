@@ -20,7 +20,8 @@ public class MenuService : IMenuService
         _settings = settings;
         _logger = logger;
 
-        _menuByPassUrl = $"{_settings.Value.MenuUrl}/api/v1/Pizza/pizzas";
+        _menuByPassUrl = $"{_settings.Value.BffUrl}/api/v1/Menu/pizzas";
+
     }
 
     public async Task<Menu> GetMenu()

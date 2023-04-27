@@ -7,6 +7,8 @@ using WebMVC.ViewModels;
 
 namespace WebMVC.Controllers;
 
+[Authorize]
+
 public class MenuController : Controller
 {
     private readonly IMenuService _menuSvc;
