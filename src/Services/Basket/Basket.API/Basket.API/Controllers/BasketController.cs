@@ -25,9 +25,9 @@ namespace Basket.API.Controllers
         [ProducesResponseType(typeof(BuyerBasket), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<BuyerBasket>> GetBasketByIdAsync(string id)
         {
-            var basket = await _repository.GetBasketAsync(id);
+            var basket = await _repository.GetOrCreateBasketAsync(id);
 
-            return Ok(basket ?? new BuyerBasket(id));
+            return Ok(basket);
         }
         [HttpPost]
         [ProducesResponseType(typeof(BuyerBasket), (int)HttpStatusCode.OK)]

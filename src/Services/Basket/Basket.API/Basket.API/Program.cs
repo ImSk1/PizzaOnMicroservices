@@ -1,14 +1,26 @@
+using System.Net;
 using System.Reflection;
 using Basket.API.Extensions;
+using Basket.API.Services;
 using FluentValidation;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var appName = "Basket.API";
 var builder = WebApplication.CreateBuilder(args);
 builder.AddCustomConfiguration();
+builder.WebHost.UseKestrel(options => {
+    var ports = ProgramExtensions.GetDefinedPorts(builder.Configuration);
+    options.Listen(IPAddress.Any, ports.httpPort, listenOptions => {
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+    });
+    options.Listen(IPAddress.Any, ports.grpcPort, listenOptions => {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
 
+});
 builder.Services
     .AddValidatorsFromAssembly(Assembly.Load(Namespace), ServiceLifetime.Scoped)
     .AddCustomMVC(builder.Configuration)
@@ -16,7 +28,8 @@ builder.Services
     .AddCustomServices(builder.Configuration)
     .AddCustomAuthentication(builder.Configuration)
     .AddRedisCache(builder.Configuration)
-    .AddCustomHealthCheck(builder.Configuration);
+    .AddCustomHealthCheck(builder.Configuration)
+    .AddCustomGrpc(builder.Configuration);
 
 // Add services to the container.
 
@@ -45,6 +58,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapDefaultControllerRoute();
+
+app.MapGrpcService<BasketGrpcService>();
 
 app.MapControllers();
 

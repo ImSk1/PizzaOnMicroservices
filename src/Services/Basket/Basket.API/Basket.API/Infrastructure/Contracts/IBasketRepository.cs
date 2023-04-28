@@ -6,7 +6,7 @@ namespace Basket.API.Infrastructure.Contracts
     {
         Task<bool> DeleteBasketAsync(string basketId);
         IEnumerable<string> GetBuyerIds();
-        Task<BuyerBasket> GetBasketAsync(string customerId);
+        Task<BuyerBasket> GetOrCreateBasketAsync(string customerId);
         Task<BuyerBasket> UpdateBasketAsync(BuyerBasket basket);
     }
 }

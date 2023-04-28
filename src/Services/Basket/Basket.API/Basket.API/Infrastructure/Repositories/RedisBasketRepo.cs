@@ -35,14 +35,16 @@ namespace Basket.API.Infrastructure.Repositories
             var endpoint = _redis.GetEndPoints();
             return _redis.GetServer(endpoint.First());
         }
-        public async Task<BuyerBasket> GetBasketAsync(string customerId)
+        public async Task<BuyerBasket> GetOrCreateBasketAsync(string customerId)
         {
             var data = await _database.StringGetAsync(customerId);
 
             if (data.IsNullOrEmpty)
             {
-                return null;
+                await _database.StringSetAsync(customerId, JsonSerializer.Serialize(new BuyerBasket(customerId)));
             }
+
+            data = await _database.StringGetAsync(customerId);
 
             return JsonSerializer.Deserialize<BuyerBasket>(data, new JsonSerializerOptions
             {
@@ -62,7 +64,7 @@ namespace Basket.API.Infrastructure.Repositories
 
             _logger.LogInformation("Basket item persisted succesfully.");
 
-            return await GetBasketAsync(basket.BuyerId);
+            return await GetOrCreateBasketAsync(basket.BuyerId);
         }
     }
 }
