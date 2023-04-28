@@ -35,5 +35,26 @@ namespace Web.BFF.Services
 
             
         }
+        public async Task<IEnumerable<Web.BFF.Models.Pizza>> GetPizzasByIdsAsync(IEnumerable<Guid> ids)
+        {
+            var request = new GetPizzasByIdsRequest();
+            var stringArr = ids.Select(a => a.ToString()).ToList();
+            request.Id.AddRange(stringArr);
+            _logger.LogInformation("grpc request {@request}", request);
+            try
+            {
+                var response = await _client.GetPizzasByIdsAsync(request);
+                _logger.LogInformation("grpc response {@response}", response);
+
+                var pizzas = new List<Web.BFF.Models.Pizza>();
+                pizzas.AddRange(response.Pizzas.Select(p => p.ToPizza()));
+                return pizzas;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
     }
 }

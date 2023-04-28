@@ -24,6 +24,17 @@ namespace Menu.API.Grpc
             response.Pizzas.AddRange(pizzas.Select(p => p.ToGrpcPizza()));
             return response;
         }
+
+        public override async Task<GetAllPizzasResponse> GetPizzasByIds(GetPizzasByIdsRequest request, ServerCallContext context)
+        {
+            var pizzas = await _menuService.GetAllPizzasAsync(p => request.Id.ToArray().Select(p => Guid.Parse(p)).Contains(p.Id));
+            var response = new GetAllPizzasResponse();
+            response.Pizzas.AddRange(pizzas.Select(p => p.ToGrpcPizza()));
+            return response;
+        }
+
+
+
         public override async Task<Empty> CreatePizza(Pizza request, ServerCallContext context)
         {
             await _menuService.AddPizza(request.ToPizza());

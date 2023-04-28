@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Linq.Expressions;
+using FluentValidation;
 using Menu.API.Services.Contracts;
 using MongoDbGenericRepository;
 using Menu.API.Infrastructure.Entities;
@@ -24,6 +25,12 @@ namespace Menu.API.Services
             _logger.LogInformation("----- Menu Service - Getting All Pizzas");
 
             return await _repo.GetAllAsync<Pizza>((pizza) => true);
+        }
+        public async Task<IEnumerable<Pizza>> GetAllPizzasAsync(Expression<Func<Pizza, bool>> prediacte)
+        {
+            _logger.LogInformation("----- Menu Service - Getting Pizzas");
+
+            return await _repo.GetAllAsync<Pizza>(prediacte);
         }
 
         public async Task AddPizza(Pizza pizza)

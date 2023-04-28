@@ -9,11 +9,15 @@ service PizzaService {
     rpc CreatePizza (Pizza) returns (Empty);
     rpc UpdatePizza (Pizza) returns (Empty);
     rpc DeletePizza (DeletePizzaRequest) returns (DeletePizzaResponse);
+    rpc GetPizzasByIds (GetPizzasByIdsRequest) returns (GetAllPizzasResponse);
 }
 message Empty {}
 
 message GetAllPizzasResponse {
     repeated Pizza pizzas = 1;
+}
+message GetPizzasByIdsRequest{
+    repeated string id = 1;
 }
 
 
