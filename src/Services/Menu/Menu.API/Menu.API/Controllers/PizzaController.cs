@@ -8,7 +8,7 @@ namespace Menu.API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class PizzaController : ControllerBase
     {
         private readonly IMenuService _menuService;

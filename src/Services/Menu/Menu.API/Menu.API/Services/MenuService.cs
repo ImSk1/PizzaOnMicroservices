@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
 using FluentValidation;
+using MassTransit;
+using Menu.API.Events;
 using Menu.API.Services.Contracts;
 using MongoDbGenericRepository;
 using Menu.API.Infrastructure.Entities;
@@ -12,12 +14,14 @@ namespace Menu.API.Services
         private readonly IBaseMongoRepository _repo;
         private readonly ILogger<MenuService> _logger;
         private readonly IValidator<Pizza> _validator;
+        private readonly IBus _publisher;
 
-        public MenuService(IBaseMongoRepository repo, ILogger<MenuService> logger, IValidator<Pizza> validator)
+        public MenuService(IBaseMongoRepository repo, ILogger<MenuService> logger, IValidator<Pizza> validator, IBus publisher)
         {
             _repo = repo;
             _logger = logger;
             _validator = validator;
+            _publisher = publisher;
         }
 
         public async Task<IEnumerable<Pizza>> GetAllPizzasAsync()
@@ -43,6 +47,11 @@ namespace Menu.API.Services
             {
                 throw new ArgumentException(validationResult.ToString());
             }
+
+            await _publisher.Publish<PizzaCreatedEvent>(new PizzaCreatedEvent()
+            {
+                Name = pizza.Name,
+            });
 
             await _repo.AddOneAsync<Pizza>(pizza);
         }

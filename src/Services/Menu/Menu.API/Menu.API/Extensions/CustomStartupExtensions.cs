@@ -1,4 +1,5 @@
-﻿using Menu.API.Infrastructure;
+﻿using MassTransit;
+using Menu.API.Infrastructure;
 using Menu.API.Services;
 using Menu.API.Services.Contracts;
 using Menu.API.Settings;
@@ -10,6 +11,7 @@ using MongoDB.Driver;
 using MongoDbGenericRepository;
 using Serilog;
 using Microsoft.Extensions.DependencyInjection;
+using Menu.API.Consumers;
 
 namespace Menu.API.Extensions
 {
@@ -132,6 +134,29 @@ namespace Menu.API.Extensions
         public static IServiceCollection AddCustomGrpc(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddGrpc();
+            return services;
+        }
+        public static IServiceCollection AddCustomMessaging(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<PizzaCreatedEventConsumer>();
+                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+                {
+                    var settings = configuration.GetSection("RabbitMQ");
+                    cfg.Host(new Uri($"rabbitmq://{settings["Host"]}"), h =>
+                    {
+                        h.Username(settings["Username"]);
+                        h.Password(settings["Password"]);
+                    });
+                    cfg.ReceiveEndpoint(typeof(PizzaCreatedEventConsumer).FullName, e =>
+                    {
+                        e.Consumer<PizzaCreatedEventConsumer>(provider);
+                    });
+                }));
+            })
+            .AddMassTransitHostedService();
+
             return services;
         }
         public static (int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)

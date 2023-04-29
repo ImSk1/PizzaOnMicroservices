@@ -38,7 +38,8 @@ builder.Services
     .AddCustomHealthChecks(builder.Configuration)
     .AddCustomServices(builder.Configuration)
     .AddCustomAuthentication(builder.Configuration)
-    .AddCustomGrpc(builder.Configuration);
+    .AddCustomGrpc(builder.Configuration)
+    .AddCustomMessaging(builder.Configuration);
 
 builder.Host.UseSerilog(CustomStartupExtensions.CreateSerilogLogger(builder.Configuration));
 
