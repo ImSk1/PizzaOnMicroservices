@@ -13,6 +13,7 @@ namespace Identity.API.Extensions
     {
         public static void AddCustomConfiguration(this WebApplicationBuilder builder)
         {
+            
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -38,9 +39,23 @@ namespace Identity.API.Extensions
             builder.Services.AddRazorPages();
 
         }
-        public static void AddCustomDatabase(this WebApplicationBuilder builder) =>
-            builder.Services.AddDbContext<IdentityApiDbContext>(
-                options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        public static void AddCustomDatabase(this WebApplicationBuilder builder)
+        {
+            var envConnection = builder.Configuration.GetValue<string>("CONNECTION_STRING");
+            if (string.IsNullOrEmpty(envConnection))
+            {
+                builder.Services.AddDbContext<IdentityApiDbContext>(
+                    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            }
+            else
+            {
+                builder.Services.AddDbContext<IdentityApiDbContext>(
+                    options => options.UseSqlServer(envConnection));
+            }
+           
+        }
+           
         public static void AddCustomIdentity(this WebApplicationBuilder builder)
         {
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()

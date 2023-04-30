@@ -1,0 +1,100 @@
+version: '3.4'
+
+services:
+  sqlserver:
+      image: mcr.microsoft.com/mssql/server:2017-latest
+      environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=PizzaPassword123$
+      ports:
+        - "1433:1433"
+  identity.api:
+    image: sk1es/identityapi:v3
+    
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - PORT=5001
+      - CONNECTION_STRING=Server=sqlserver,1433;Database=IdentityApi;User Id=sa;Password=PizzaPassword123$; TrustServerCertificate=True;
+    ports:
+      - "5001:5001"
+    depends_on:
+      - sqlserver
+
+  menu.api:
+    image: sk1es/menuapi
+    
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - PORT=50001
+      - GRPC_PORT=5101
+    ports:
+      - "50001:50001"
+      - "5101:5101"
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - identity.api
+
+  basket.api:
+    image: sk1es/basketapi
+    
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - PORT=50002
+      - GRPC_PORT=5202
+    ports:
+      - "50002:50002"
+      - "5202:5202" 
+    depends_on:
+      - redis
+      - identity.api
+
+  webmvc:
+    image: sk1es/webmvc
+   
+      
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - PORT=5220
+    ports:
+      - "5220:5220"
+    depends_on:
+      - identity.api
+      - web.bff
+
+  web.bff:
+    image: sk1es/webbff
+   
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - PORT=5038
+    ports:
+      - "5038:5038"
+    depends_on:
+      - basket.api
+      - menu.api
+      - identity.api
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+
+
+  seq:
+    image: datalust/seq:latest
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5431:80"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

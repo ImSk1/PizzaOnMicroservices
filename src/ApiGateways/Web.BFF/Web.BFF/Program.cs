@@ -1,7 +1,16 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Net;
 using Web.BFF.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.AddCustomConfiguration();
+builder.WebHost.UseKestrel(options => {
+    var port = ProgramExtensions.GetDefinedPort(builder.Configuration);
+    options.Listen(IPAddress.Any, port, listenOptions => {
+        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+    });
+    
+});
 // Add services to the container.
 builder.Services
     .AddCustomMvc(builder.Configuration)

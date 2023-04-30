@@ -12,6 +12,12 @@ namespace Web.BFF.Extensions
 {
     public static class ProgramExtensions
     {
+        public static void AddCustomConfiguration(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddOptions();
+            builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        }
         public static IServiceCollection AddCustomMvc(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
@@ -99,6 +105,11 @@ namespace Web.BFF.Extensions
             })
                 .AddInterceptor<JwtClientInterceptor>();
             return services;
+        }
+        public static int GetDefinedPort(IConfiguration config)
+        {
+            var port = config.GetValue("PORT", 5038);
+            return port;
         }
     }
 }
